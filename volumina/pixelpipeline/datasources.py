@@ -45,7 +45,8 @@ class ArraySource( QObject ):
             "slicing into an array of shape=%r requested, but the slicing object is %r" % (slicing, self._array.shape)  
         return ArrayRequest(self._array[slicing])
 
-    def setDirty( self, slicing ):
+    def setDirty( self, slot, roi ):
+        slicing = roi.toSlice()
         if not is_pure_slicing(slicing):
             raise Exception('dirty region: slicing is not pure')
         self.isDirty.emit( slicing )
@@ -97,7 +98,8 @@ class RelabelingArraySource( QObject ):
             a = self._relabeling[a]
         return ArrayRequest(a)
         
-    def setDirty( self, slicing ):
+    def setDirty( self, slot, roi ):
+        slicing = roi.toSlice()
         if not is_pure_slicing(slicing):
             raise Exception('dirty region: slicing is not pure')
         self.isDirty.emit( slicing )
@@ -137,7 +139,7 @@ class LazyflowSource( QObject ):
         super(LazyflowSource, self).__init__()
         self._outslot = outslot
         self._priority = priority
-        self._outslot.registerDirtyCallback(self.setDirty)
+        self._outslot.notifyDirty(self.setDirty)
 
     def request( self, slicing ):
         if cfg.getboolean('pixelpipeline', 'verbose'):
@@ -153,7 +155,8 @@ class LazyflowSource( QObject ):
             reqobj = ArrayRequest( np.zeros(slicing2shape(slicing), dtype=np.uint8 ) )
         return LazyflowRequest( reqobj )
 
-    def setDirty( self, slicing ):
+    def setDirty( self, slot, roi ):
+        slicing = roi.toSlice()
         if not is_pure_slicing(slicing):
             raise Exception('dirty region: slicing is not pure')
         self.isDirty.emit( slicing )
@@ -227,7 +230,8 @@ class ConstantSource( QObject ):
         result[:] = self._constant
         return ConstantRequest( result )
 
-    def setDirty( self, slicing ):
+    def setDirty( self, slot, roi ):
+        slicing = roi.toSlice()
         if not is_pure_slicing(slicing):
             raise Exception('dirty region: slicing is not pure')
         self.isDirty.emit( slicing )
