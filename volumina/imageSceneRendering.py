@@ -34,6 +34,10 @@ class ImageSceneRenderThread(QThread):
 
         self._stackedIms = stackedImageSources
 
+    @property
+    def tiling(self):
+        return self._tiling
+
     def stop(self):
         self._stopped = True
         self._dataPending.set()
