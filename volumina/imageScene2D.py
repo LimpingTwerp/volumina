@@ -207,12 +207,16 @@ class ImageScene2D(QGraphicsScene):
         if not self._renderThread:
           return
 
-        if not self._renderThread.isRunning():
+        if not self._renderThread.isRunning() \
+           or self._renderThread.tiling != self._tiling:
           self._brushingLayer  = TiledImageLayer(self._tiling)
 
           shape = (self._numLayers, len(self._tiling))
           self._requestsOld       = numpy.ndarray(shape, dtype = object)
           self._requestsNew       = numpy.ndarray(shape, dtype = object)
+
+          if self._renderThread.isRunning():
+              self._renderThread.stop()
 
           self._renderThread.start(self._tiling)
   
