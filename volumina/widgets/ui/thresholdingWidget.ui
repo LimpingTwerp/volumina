@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>308</width>
-    <height>63</height>
+    <width>312</width>
+    <height>82</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -43,7 +43,7 @@
        <widget class="QSlider" name="_minSlider">
         <property name="minimumSize">
          <size>
-          <width>100</width>
+          <width>75</width>
           <height>0</height>
          </size>
         </property>
@@ -73,7 +73,7 @@
        <widget class="QSlider" name="_maxSlider">
         <property name="minimumSize">
          <size>
-          <width>100</width>
+          <width>75</width>
           <height>0</height>
          </size>
         </property>
