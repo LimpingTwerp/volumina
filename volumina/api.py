@@ -26,7 +26,7 @@ import vigra
 _has_lazyflow = True
 try:
     from volumina.adaptors import Op5ifyer
-    from lazyflow.operators.generic import OpMultiArraySlicer
+    from lazyflow.operators import OpMultiArraySlicer
 except ImportError as e:
     exceptStr = str(e)
     _has_lazyflow = False
@@ -167,8 +167,8 @@ class Viewer(QMainWindow):
             if volumeImage:
                 if len(a.shape) < 5:
                     o = Op5ifyer(a.operator.graph)
-                    o.inputs['Input'].connect(a)
-                    a = o.outputs['Output']
+                    o.inputs['input'].connect(a)
+                    a = o.outputs['output']
             elif not volumeImage:
                 o = OpMultiArraySlicer(a.operator.graph)
                 o.inputs['Input'].connect(a)
