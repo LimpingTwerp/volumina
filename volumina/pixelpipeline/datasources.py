@@ -7,6 +7,10 @@ import numpy as np
 
 import volumina.adaptors
 
+import logging
+logger = logging.getLogger(__name__)
+traceLogger = logging.getLogger("TRACE." + __name__)
+
 #*******************************************************************************
 # A r r a y R e q u e s t                                                      *
 #*******************************************************************************
@@ -196,12 +200,15 @@ class LazyflowSinkSource( LazyflowSource ):
         return LazyflowRequest( reqobj )
 
     def put( self, slicing, array ):
+        traceLogger.debug("LazyflowSinkSource.put")
         # Convert the data from volumina ordering to whatever axistags the input slot uses
         transposeOrder = ['txyzc'.index(k) for k in [tag.key for tag in self._inputSlot.axistags]]
         transposedArray = np.transpose(array, transposeOrder)        
         transposedSlicing = [slicing[i] for i in transposeOrder]
 
         self._inputSlot[transposedSlicing] = transposedArray
+        traceLogger.debug("Finished LazyflowSinkSource.put")
+        
         
 #*******************************************************************************
 # C o n s t a n t R e q u e s t                                                *

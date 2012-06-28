@@ -35,6 +35,10 @@ from PyQt4.QtGui  import QPen, QGraphicsScene, QColor, \
 import numpy
 import qimage2ndarray
 
+import logging
+logger = logging.getLogger(__name__)
+traceLogger = logging.getLogger("TRACE." + __name__)
+
 #*******************************************************************************
 # B r u s h i n g M o d e l                                                    *
 #*******************************************************************************
@@ -99,9 +103,10 @@ class BrushingModel(QObject):
         self.brushSizeChanged.emit(self.brushSize)
     
     def setDrawnNumber(self, num):
-        print "Setting Drawnnumer", num
+        traceLogger.debug("Enter")
         self.drawnNumber = num
         self.drawnNumberChanged.emit(num)
+        traceLogger.debug("Exit")
         
     def getBrushSize(self):
         return self.brushSize
