@@ -44,6 +44,9 @@ import math
 
 import threading
 
+import logging
+logger = logging.getLogger(__name__)
+
 #*******************************************************************************
 # I m a g e S c e n e 2 D                                                      *
 #*******************************************************************************
@@ -277,7 +280,8 @@ class ImageScene2D(QGraphicsScene):
         request.notify(self._onPatchFinished, request=request, patchNr=patchNr, layerNr=layerNr, tiling=tiling, numLayers=numLayers)
 
     def _onLayerDirty(self, layerNr, rect):
-        if layerNr <= self._stackedImageSources.lastVisibleLayer():
+        visible, opacity, layer = self._stackedImageSources[layerNr]
+        if visible and opacity > 0.0 and layerNr <= self._stackedImageSources.lastVisibleLayer():
             self._updateLayer(layerNr, rect)
 
     def _updateLayer(self, layerNr, dirty_rect):
@@ -286,6 +290,7 @@ class ImageScene2D(QGraphicsScene):
             viewportRect = QRect(math.floor(viewportRect.x()), math.floor(viewportRect.y()), math.ceil(viewportRect.width()), math.ceil(viewportRect.height()))
             if not dirty_rect.isValid():
                 dirty_rect = viewportRect
+                logger.debug("Updating entire viewport rect")
 
                 for p in self._brushingLayer:
                     p.lock()
