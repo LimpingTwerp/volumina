@@ -46,6 +46,7 @@ import threading
 
 import logging
 logger = logging.getLogger(__name__)
+traceLogger = logging.getLogger("TRACE." + __name__)
 
 #*******************************************************************************
 # I m a g e S c e n e 2 D                                                      *
@@ -281,9 +282,12 @@ class ImageScene2D(QGraphicsScene):
 
     def _onLayerDirty(self, layerNr, rect):
         visible, opacity, layer = self._stackedImageSources[layerNr]
-        if visible and opacity > 0.0 and layerNr <= self._stackedImageSources.lastVisibleLayer():
+        opacity = self._stackedImageSources[layerNr][1]
+        if layerNr <= self._stackedImageSources.lastVisibleLayer() and layerIsVisible and opacity > 0.0:
+            layerName = self._stackedImageSources._layerStackModel[layerNr].name
             self._updateLayer(layerNr, rect)
 
+        traceLogger.debug("Visibility of layer {} changed to {}".format( layerNr, visible ) )
     def _updateLayer(self, layerNr, dirty_rect):
         if self.views():
             viewportRect = self.views()[0].mapToScene(self.views()[0].rect()).boundingRect()
