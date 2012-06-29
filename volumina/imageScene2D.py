@@ -274,6 +274,7 @@ class ImageScene2D(QGraphicsScene):
         r = self._requestsNew[layerNr, patchNr]
         
         if r is not None:
+            traceLogger.debug("Cancelling an outstanding request...")
             r.cancel()
             self._requestsNew[layerNr, patchNr] = request
         else:
@@ -282,8 +283,7 @@ class ImageScene2D(QGraphicsScene):
 
     def _onLayerDirty(self, layerNr, rect):
         visible, opacity, layer = self._stackedImageSources[layerNr]
-        opacity = self._stackedImageSources[layerNr][1]
-        if layerNr <= self._stackedImageSources.lastVisibleLayer() and layerIsVisible and opacity > 0.0:
+        if visible and opacity > 0.0 and layerNr <= self._stackedImageSources.lastVisibleLayer():
             layerName = self._stackedImageSources._layerStackModel[layerNr].name
             self._updateLayer(layerNr, rect)
 
