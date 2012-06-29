@@ -8,6 +8,10 @@ from volumina.pixelpipeline.imagesources import AlphaModulatedImageSource, Color
 import threading
 from collections import deque
 
+import logging
+logger = logging.getLogger(__name__)
+traceLogger = logging.getLogger("TRACE." + __name__)
+
 #*******************************************************************************
 # I m a g e S c e n e R e n d e r T h r e a d                                  *
 #*******************************************************************************
@@ -63,8 +67,11 @@ class ImageSceneRenderThread(QThread):
             return
         bbox = QRect()
         toUpdate = numpy.zeros((len(self._tiling),), dtype=numpy.uint8)
+
+        self._dataPending.clear()
         while len(self._queue) > 0:
             self._dataPending.clear()
+            traceLogger.debug("Processing data")        
 
             layerNr, patchNr, image, tiling, numLayers = self._queue.popleft()
             if tiling != self._tiling or numLayers != self._numLayers:
@@ -79,8 +86,7 @@ class ImageSceneRenderThread(QThread):
             self._imageLayersNext[layerNr,patchNr] = image
             toUpdate[patchNr] = 1
 
-
-        firstOpaqueLayer = 1000000000000000000
+        firstOpaqueLayer = len(self._stackedIms)
         for i, (visible, layerOpacity, layerImageSource) in enumerate(self._stackedIms):
             if visible and layerOpacity == 1.0 and layerImageSource.isOpaque():
                 firstOpaqueLayer = i
@@ -110,6 +116,7 @@ class ImageSceneRenderThread(QThread):
         self._compositeCurrent = numpy.where(numpy.equal(self._compositeNext, None), self._compositeCurrent, self._compositeNext)
         self._compositeNext[:] = None
 
+        traceLogger.debug("Emitting patch available with bbox={}".format(bbox.getCoords()))
         self.patchAvailable.emit(bbox)
 
     def run(self):
